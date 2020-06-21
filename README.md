@@ -60,7 +60,7 @@ Bonus points if you're able to:
 - JavaScript
 - [Node](https://nodejs.org/en/)
 - [Express](https://expressjs.com/) "^4.17.1"
-- MySQL
+- [MySQL](https://www.npmjs.com/package/mysql) "^2.18.1"
 
 ### Minimum Requirements
 
@@ -76,7 +76,7 @@ Bonus points if you're able to:
 Perform the following:
 
 ```bash
-npm i -y
+npm i
 npm i express
 npm i inquirer
 npm i mysql
