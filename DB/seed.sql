@@ -1,0 +1,44 @@
+USE roster_db;
+
+INSERT INTO department (name) VALUES ("Operations");
+INSERT INTO department (name) VALUES ("Executives");
+INSERT INTO department (name) VALUES ("Project Management");
+INSERT INTO department (name) VALUES ("Engineering");
+
+INSERT INTO role (title, salary, dept_id) VALUES ("Foreman", 180000, 1;
+INSERT INTO role (title, salary, dept_id) VALUES ("Journeyman", 160000, 1);
+INSERT INTO role (title, salary, dept_id) VALUES ("Apprentice", 82000, 1);
+INSERT INTO role (title, salary, dept_id) VALUES ("VP Finance", 250000, 2);
+INSERT INTO role (title, salary, dept_id) VALUES ("VP Operations", 250000, 2);
+INSERT INTO role (title, salary, dept_id) VALUES ("General Manager", 220000, 2);
+INSERT INTO role (title, salary, dept_id) VALUES ("Superintendent", 200000, 1);
+INSERT INTO role (title, salary, dept_id) VALUES ("Director", 150000, 3);
+INSERT INTO role (title, salary, dept_id) VALUES ("Sr Project Manager", 120000, 3);
+INSERT INTO role (title, salary, dept_id) VALUES ("Project Manager", 100000, 3);
+INSERT INTO role (title, salary, dept_id) VALUES ("Project Engineer", 75000, 3);
+INSERT INTO role (title, salary, dept_id) VALUES ("Project Administrator", 55000, 3);
+INSERT INTO role (title, salary, dept_id) VALUES ("Engineering Manager", 180000, 4);
+INSERT INTO role (title, salary, dept_id) VALUES ("Design Engineer", 80000, 4);
+INSERT INTO role (title, salary, dept_id) VALUES ("Junior Engineer", 60000, 4);
+INSERT INTO role (title, salary, dept_id) VALUES ("Detailer", 120000, 4);
+
+INSERT INTO employee (fName, lName, role_id) VALUES ("David", "Anthony", 1);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Frank", "Fuffy", 2);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Bart", "Simpson", 3);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Robert", "Schmitz", 4);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Adam", "Lamb", 5);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Larry", "Jimbo", 6);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Emily", "Shell", 7);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Mick", "Lorenzo", 8);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Peter", "Panelli", 9);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Keenv", "Gordon", 10);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Morpheus", "Reno", 11);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Peter", "Griffin", 12);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Gavin", "Tart", 13);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Quinton", "Zee", 14);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Hailey", "Bambino", 15);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Leehom", "Park", 16);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Tony", "Castanza", 17);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Casey", "Dominos", 18);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Rick", "Lee", 19);
+INSERT INTO employee (fName, lName, role_id) VALUES ("Miranda", "Ostrich", 20);

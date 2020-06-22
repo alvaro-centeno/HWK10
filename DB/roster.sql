@@ -24,31 +24,3 @@ CREATE TABLE employee (
   mgr_id INT NULL,
   PRIMARY KEY (id)
 );
-
-INSERT INTO todos(text)
-VALUES ("Mysql programmers get a lot of money");
-
-INSERT INTO todos(text)
-VALUES ("finish the course");
-
-INSERT INTO todos(text)
-VALUES ("have fun");
-
--- view all todos
-SELECT * FROM todos;
-SELECT text, id FROM todos WHERE completed = false;
-
--- view single todo
-SELECT * FROM todos
-WHERE id = 2;
-
--- update todos
-UPDATE todos 
-SET text = "Live life"
-WHERE id = 3;
-UPDATE todos 
-SET completed = true
-WHERE id = 3;
-
--- delete a todo
-DELETE FROM todos WHERE id = 2;

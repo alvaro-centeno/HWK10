@@ -1,9 +1,8 @@
 require("dotenv").config();
-const inquirer = require("inquirer");
 const mysql = require("mysql");
 const express = require("express");
 const app = express();
-
+const roster = require("./roster");
 const PORT = 5088;
 
 const connection = mysql.createConnection({
