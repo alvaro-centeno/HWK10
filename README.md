@@ -2,7 +2,7 @@
 
 ## Description
 
-This is a web application known as **CMS** that can be used maintain a company's employees' database written with express, inquirer, and use of MySQL to enable easy upkeeping. It is deployed on [Heroku](https://ic-mysql_emptracker.herokuapp.com/).
+This is a web application known as **CMS** that can be used maintain a company's employees' database written with express, inquirer, and use of MySQL to enable easy upkeeping. It is deployed on [Heroku](https://ic-mysql-emptracker.herokuapp.com/).
 
 ````
 As a business owner
@@ -80,7 +80,10 @@ npm i
 npm i express
 npm i inquirer
 npm i mysql
+npm i dotenv
 ```
+
+provide only host information to work locally.
 
 ### Intended Usage
 
