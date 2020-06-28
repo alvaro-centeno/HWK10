@@ -5,7 +5,7 @@ INSERT INTO department (name) VALUES ("Executives");
 INSERT INTO department (name) VALUES ("Project Management");
 INSERT INTO department (name) VALUES ("Engineering");
 
-INSERT INTO role (title, salary, dept_id) VALUES ("Foreman", 180000, 1;
+INSERT INTO role (title, salary, dept_id) VALUES ("Foreman", 180000, 1);
 INSERT INTO role (title, salary, dept_id) VALUES ("Journeyman", 160000, 1);
 INSERT INTO role (title, salary, dept_id) VALUES ("Apprentice", 82000, 1);
 INSERT INTO role (title, salary, dept_id) VALUES ("VP Finance", 250000, 2);
@@ -38,7 +38,3 @@ INSERT INTO employee (fName, lName, role_id) VALUES ("Gavin", "Tart", 13);
 INSERT INTO employee (fName, lName, role_id) VALUES ("Quinton", "Zee", 14);
 INSERT INTO employee (fName, lName, role_id) VALUES ("Hailey", "Bambino", 15);
 INSERT INTO employee (fName, lName, role_id) VALUES ("Leehom", "Park", 16);
-INSERT INTO employee (fName, lName, role_id) VALUES ("Tony", "Castanza", 17);
-INSERT INTO employee (fName, lName, role_id) VALUES ("Casey", "Dominos", 18);
-INSERT INTO employee (fName, lName, role_id) VALUES ("Rick", "Lee", 19);
-INSERT INTO employee (fName, lName, role_id) VALUES ("Miranda", "Ostrich", 20);

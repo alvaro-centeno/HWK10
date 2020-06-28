@@ -4,8 +4,8 @@
   "description": "## Description",
   "main": "server.js",
   "dependencies": {
+    "console.table": "^0.10.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
     "inquirer": "^7.2.0",
     "mysql": "^2.18.1"
   },
@@ -13,7 +13,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "nodemon": "nodemon server.js"
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
