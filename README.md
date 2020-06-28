@@ -77,7 +77,7 @@ Perform the following:
 
 ```bash
 npm i
-npm i express
+npm i console.table
 npm i inquirer
 npm i mysql
 npm i dotenv
