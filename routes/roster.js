@@ -6,6 +6,8 @@ const {
   listByDept,
   listByMgr,
   viewRoles,
+  viewDept,
+  viewNames,
   addStaff,
   remStaff,
   upRole,
@@ -23,7 +25,7 @@ const mainMenu = () => {
   inquirer
     .prompt({
       name: "mainMenu",
-      message: "What would you like to do?",
+      message: "What would you like to do? \n",
       type: "list",
       choices: [
         "View all Employees",
@@ -69,7 +71,7 @@ const mainMenu = () => {
           });
           break;
         case "Update Staff's Manager":
-          updateManager().then((res) => {
+          updateMgr().then((res) => {
             console.log(res);
             mainMenu();
           });
@@ -264,7 +266,7 @@ const updateRole = () => {
   });
 };
 
-const updateManager = () => {
+const updateMgr = () => {
   employee = [];
   return new Promise((resolve, reject) => {
     viewStaff()

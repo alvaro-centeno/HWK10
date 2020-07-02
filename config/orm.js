@@ -15,7 +15,7 @@ const viewStaff = () => {
     LEFT JOIN employee m ON m.id = e.mgr_id
     LEFT JOIN roles ON e.role_id = roles.id
     LEFT JOIN department ON roles.dept_id = department.id
-    ORDER BY e.id;
+    ORDER BY e.id
     `,
       (err, data) => {
         err ? reject(err) : resolve(data);
@@ -150,6 +150,8 @@ module.exports = {
   listByDept,
   listByMgr,
   viewRoles,
+  viewDept,
+  viewNames,
   addStaff,
   remStaff,
   upRole,
