@@ -1,89 +1,85 @@
-const connection = require("../Assets/connection");
 const inquirer = require("inquirer");
+const connection = require("../config/connection");
 const cTable = require("console.table");
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+const {
+  viewStaff,
+  listByDept,
+  listByMgr,
+  viewRoles,
+  addStaff,
+  remStaff,
+  upRole,
+  upMgr,
+} = require("../config/orm");
 
-const mainMenu = async () => {
-  await inquirer
-    .prompt([
-      {
-        name: "mainMenu",
-        message: "What would you like to access:",
-        type: "list",
-        choices: [
-          "View Database",
-          "Add to Database",
-          "Update Database",
-          "Delete from Database",
-          "Utilized Budget",
-          "Exit",
-        ],
-      },
-    ])
-    .then(async (res) => {
+let roles = [];
+let employees = [];
+let newEmployee = {};
+let roleID;
+let managerID;
+let employeeID;
+
+const mainMenu = () => {
+  inquirer
+    .prompt({
+      name: "mainMenu",
+      message: "What would you like to do?",
+      type: "list",
+      choices: [
+        "View all Employees",
+        "View Staff by DEPT",
+        "View Staff by MGR",
+        "Add a New Staff",
+        "Update Staff's Role",
+        "Update Staff's Manager",
+        "Remove a Staff",
+        "Exit",
+      ],
+    })
+    .then((res) => {
       switch (res.mainMenu) {
-        case "View Database":
-          viewCompany();
-          break;
-
-        case "Add to Database":
-          switch (res) {
-            case "department":
-              break;
-            case "roles":
-              break;
-            case "employee":
-              break;
-            case "Main Menu":
-              mainMenu();
-              break;
-          }
-          break;
-
-        //Delete Items from Database
-        case "Update Database":
-          switch (resToUpdate) {
-            case "Department":
-              break;
-
-            case "Roles":
-              break;
-
-            case "Employee":
-              break;
-
-            case "Main Menu":
-              mainMenu();
-              break;
-          }
-          break;
-
-        //Delete Items from Database
-        case "Delete from Database":
-          break;
-
-        //Salary Sum
-        case "Utilized Budget":
-          salary().then((allSalary) => {
-            let objSalary = [];
-            let tSalary = 0;
-            for (let i = 0; i < allSalary.length; i++) {
-              if (typeof allSalary[i].salary === "number") {
-                objSalary.push(allSalary[i].salary);
-              }
-            }
-            for (let i = 0; i < objSalary.length; i++) {
-              tSalary += objSalary[i];
-            }
-            console.log(formatter.format(tSalary), "USD");
+        case "View all Employees":
+          viewStaff().then((res) => {
+            console.table(res);
             mainMenu();
           });
           break;
-
-        //Closed App
+        case "View Staff by DEPT":
+          listByDept().then((res) => {
+            console.table(res);
+            mainMenu();
+          });
+          break;
+        case "View Staff by MGR":
+          listByMgr().then((res) => {
+            console.table(res);
+            mainMenu();
+          });
+          break;
+        case "Add a New Staff":
+          addEmployee().then((res) => {
+            console.log(res);
+            mainMenu();
+          });
+          break;
+        case "Update Staff's Role":
+          updateRole().then((res) => {
+            console.log(res);
+            mainMenu();
+          });
+          break;
+        case "Update Staff's Manager":
+          updateManager().then((res) => {
+            console.log(res);
+            mainMenu();
+          });
+          break;
+        case "Remove a Staff":
+          removeEmployee().then((res) => {
+            console.log(res);
+            mainMenu();
+          });
+          break;
         case "Exit":
           connection.end();
           process.exit();
@@ -92,66 +88,229 @@ const mainMenu = async () => {
     });
 };
 
-async function viewCompany() {
-  await inquirer
-    .prompt([
-      {
-        type: "list",
-        name: "view",
-        message: "View Company Database:",
-        choices: ["Department", "Roles", "Employee", "All by Id"],
-      },
-    ])
-    .then((res) => {
-      let result = res.view;
-      readAllCompany(result).then((res) => {
-        const table = cTable.getTable(res);
-        console.log(table);
-        mainMenu();
-      });
-    });
-}
-
-const readAllCompany = (result) => {
+const removeEmployee = () => {
+  employees = [];
   return new Promise((resolve, reject) => {
-    if (result === "Department") {
-      connection.query(`SELECT id, deptName FROM ${result} `, (err, data) => {
-        err ? reject(err) : resolve(data);
+    viewStaff()
+      .then((res) => {
+        res.forEach((el) => {
+          employees.push(el.full_name);
+        });
+      })
+      .then(() => {
+        inquirer
+          .prompt([
+            {
+              name: "employee",
+              type: "list",
+              message: "Which staff is getting terminated?",
+              choices: employees,
+            },
+          ])
+          .then((res) => {
+            viewStaff()
+              .then((data) => {
+                data.forEach((element) => {
+                  if (res.employee === element.full_name) {
+                    employeeID = element.id;
+                  }
+                });
+              })
+              .then(() => {
+                remStaff(employeeID).then((resp) => resolve(resp));
+              });
+          });
+      })
+      .catch((err) => {
+        if (err) reject(err);
       });
-    } else if (result === "Roles") {
-      connection.query(`SELECT dept_id, title FROM ${result} `, (err, data) => {
-        err ? reject(err) : resolve(data);
-      });
-    } else if (result === "Employee") {
-      connection.query(
-        `SELECT fName, lName, role_id, mgr_id FROM ${result} `,
-        (err, data) => {
-          err ? reject(err) : resolve(data);
-        }
-      );
-    } else {
-      connection.query(
-        `
-        SELECT employee.id, employee.fName, employee.lName, roles.title, department.deptName, roles.salary
-        FROM department RIGHT JOIN employee
-        ON department.id = employee.role_id
-        LEFT JOIN roles
-        ON roles.id= employee.role_id;
-        `,
-        (err, data) => {
-          err ? reject(err) : resolve(data);
-        }
-      );
-    }
   });
 };
 
-const salary = () => {
+const addEmployee = () => {
+  employees = [];
+  roles = [];
   return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM roles", (err, data) => {
-      err ? reject(err) : resolve(data);
-    });
+    viewRoles()
+      .then((res) => {
+        res.forEach((element) => {
+          roles.push(element.title);
+        });
+      })
+      .then(() => {
+        viewStaff()
+          .then((res) => {
+            res.forEach((el) => {
+              employees.push(el.full_name);
+            });
+          })
+          .then(() => {
+            inquirer
+              .prompt([
+                {
+                  name: "fName",
+                  type: "input",
+                  message: "Staff's First Name?",
+                },
+                {
+                  name: "lName",
+                  type: "input",
+                  message: "Staff's Last Name?",
+                },
+                {
+                  name: "role",
+                  type: "list",
+                  message: "Staff's Role?",
+                  choices: roles,
+                },
+                {
+                  name: "manager",
+                  type: "list",
+                  message: "Staff's Manager?",
+                  choices: employees,
+                },
+              ])
+              .then((res) => {
+                viewStaff()
+                  .then((data) => {
+                    data.forEach((element) => {
+                      if (res.roles === element.title) {
+                        roleID = element.role_id;
+                      }
+                      if (res.manager === element.full_name) {
+                        managerID = element.id;
+                      } else if (res.manager === "None") {
+                        managerID = null;
+                      }
+                    });
+                  })
+                  .then(() => {
+                    newEmployee = {
+                      fName: res.fName,
+                      lName: res.lName,
+                      role_id: roleID,
+                      mgr_id: managerID,
+                    };
+                    return newEmployee;
+                  })
+                  .then((obj) => {
+                    addStaff(obj).then((resp) => resolve(resp));
+                  });
+              });
+          });
+      })
+      .catch((err) => {
+        if (err) reject(err);
+      });
   });
 };
 
+const updateRole = () => {
+  employees = [];
+  roles = [];
+  return new Promise((resolve, reject) => {
+    viewRoles()
+      .then((res) => {
+        res.forEach((element) => {
+          roles.push(element.title);
+        });
+      })
+      .then(() => {
+        viewStaff()
+          .then((res) => {
+            res.forEach((el) => {
+              employees.push(el.full_name);
+            });
+          })
+          .then(() => {
+            inquirer
+              .prompt([
+                {
+                  name: "employee",
+                  type: "list",
+                  message: "Which staff's role needs an update?",
+                  choices: employees,
+                },
+                {
+                  name: "role",
+                  type: "list",
+                  message: "What's their new role?",
+                  choices: roles,
+                },
+              ])
+              .then((res) => {
+                viewStaff()
+                  .then((data) => {
+                    data.forEach((element) => {
+                      if (res.roles === element.title) {
+                        roleID = element.role_id;
+                      }
+                      if (res.employee === element.full_name) {
+                        employeeID = element.id;
+                      } else if (res.manager === "None") {
+                        employeeID = null;
+                      }
+                    });
+                  })
+                  .then(() => {
+                    upRole(employeeID, roleID).then((resp) => resolve(resp));
+                  });
+              });
+          });
+      })
+      .catch((err) => {
+        if (err) reject(err);
+      });
+  });
+};
+
+const updateManager = () => {
+  employee = [];
+  return new Promise((resolve, reject) => {
+    viewStaff()
+      .then((res) => {
+        res.forEach((el) => {
+          employee.push(el.full_name);
+        });
+      })
+      .then(() => {
+        inquirer
+          .prompt([
+            {
+              name: "employee",
+              type: "list",
+              message: "Which employee you want to update?",
+              choices: employees,
+            },
+            {
+              name: "manager",
+              type: "list",
+              message: "Who is the new manager of the employee?",
+              choices: employees,
+            },
+          ])
+          .then((res) => {
+            viewStaff()
+              .then((data) => {
+                data.forEach((element) => {
+                  if (res.manager === element.full_name) {
+                    managerID = element.id;
+                  }
+                  if (res.employee === element.full_name) {
+                    employeeID = element.id;
+                  } else if (res.manager === "") {
+                    employeeID = null;
+                  }
+                });
+              })
+              .then(() => {
+                upMgr(employeeID, managerID).then((resp) => resolve(resp));
+              });
+          });
+      })
+      .catch((err) => {
+        if (err) reject(err);
+      });
+  });
+};
 module.exports = mainMenu;

@@ -59,7 +59,6 @@ Bonus points if you're able to:
 
 - JavaScript
 - [Node](https://nodejs.org/en/)
-- [Express](https://expressjs.com/) "^4.17.1"
 - [MySQL](https://www.npmjs.com/package/mysql) "^2.18.1"
 
 ### Minimum Requirements

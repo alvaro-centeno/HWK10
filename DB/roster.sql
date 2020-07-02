@@ -4,7 +4,7 @@ USE roster_db;
 
 CREATE TABLE department (
    id INT NOT NULL AUTO_INCREMENT,
-   deptName VARCHAR (30) NOT NULL,
+   name VARCHAR (30) NOT NULL,
    PRIMARY KEY (id)
 );
 
@@ -25,10 +25,10 @@ CREATE TABLE employee (
    PRIMARY KEY (id)
 );
 
-INSERT INTO department (deptName) VALUES ("Operations");
-INSERT INTO department (deptName) VALUES ("Executives");
-INSERT INTO department (deptName) VALUES ("Project Management");
-INSERT INTO department (deptName) VALUES ("Engineering");
+INSERT INTO department (name) VALUES ("Operations");
+INSERT INTO department (name) VALUES ("Executives");
+INSERT INTO department (name) VALUES ("Project Management");
+INSERT INTO department (name) VALUES ("Engineering");
 
 INSERT INTO roles (title, salary, dept_id) VALUES ("Foreman", 180000, 1);
 INSERT INTO roles (title, salary, dept_id) VALUES ("Journeyman", 160000, 1);
@@ -60,15 +60,54 @@ INSERT INTO employee (fName, lName, role_id) VALUES ("Quinton", "Zee", 11);
 INSERT INTO employee (fName, lName, role_id) VALUES ("Hailey", "Bambino", 12);
 INSERT INTO employee (fName, lName, role_id) VALUES ("Leehom", "Park", 12);
 
-
+-- views
 SELECT * FROM department;
 SELECT * FROM roles;
 SELECT * FROM employee;
+SELECT fName, id FROM employee WHERE id = 2;
 
-SELECT employee.fName, employee.lName, roles.title, department.deptName, roles.salary
-   FROM roles INNER JOIN employee
-   ON employee.role_id = roles.id
-   INNER JOIN department
-   ON department.id = roles.dept_id;
+-- updates
+UPDATE employee SET mgr_id = 7 WHERE id = 8;
+
+-- delete
+DELETE FROM employee WHERE id = 16;
 
 
+-- View employees by department
+SELECT 
+	e.id `ID #`,
+    CONCAT_WS(" ", e.fName, e.lName) `Full Name`,
+	title `Title`, 
+	department.name `Department`
+FROM employee e
+LEFT JOIN roles
+ON e.role_id = roles.id
+LEFT JOIN department
+ON roles.dept_id = department.id
+ORDER BY department.id ASC;
+
+-- View Employees by Manager
+SELECT e.id `ID #`,
+    CONCAT_WS(" ", e.fName, e.lName) `Full Name`,
+    CONCAT_WS(" ", m.fName, m.lName) `Manager`
+FROM
+    employee e
+LEFT JOIN employee m ON m.id = e.mgr_id
+ORDER BY
+    Manager DESC;
+
+
+-- View all Employees
+SELECT
+    e.id `ID #`,
+    CONCAT_WS(" ", e.fName, e.lName) `Full Name`,
+    roles.title `Position`,
+    department.name `Department`,
+	CONCAT('$', format(roles.salary, 2)) `Base Salary`,
+    CONCAT_WS(" ", m.fName, m.lName) `Manager`
+FROM
+    employee e
+LEFT JOIN employee m ON m.id = e.mgr_id
+LEFT JOIN roles ON e.role_id = roles.id
+LEFT JOIN department ON roles.dept_id = department.id
+ORDER BY e.id;
