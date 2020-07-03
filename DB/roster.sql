@@ -8,7 +8,7 @@ CREATE TABLE department (
    PRIMARY KEY (id)
 );
 
-CREATE TABLE roles (
+CREATE TABLE role (
    id INT NOT NULL AUTO_INCREMENT,
    title VARCHAR (30) NOT NULL,
    salary DECIMAL (8,2) NOT NULL,
@@ -30,18 +30,18 @@ INSERT INTO department (name) VALUES ("Executives");
 INSERT INTO department (name) VALUES ("Project Management");
 INSERT INTO department (name) VALUES ("Engineering");
 
-INSERT INTO roles (title, salary, dept_id) VALUES ("Foreman", 180000, 1);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Journeyman", 160000, 1);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Apprentice", 82000, 1);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Vice President", 250000, 2);
-INSERT INTO roles (title, salary, dept_id) VALUES ("General Manager", 220000, 2);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Superintendent", 200000, 1);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Sr Project Manager", 120000, 3);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Project Manager", 100000, 3);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Project Engineer", 75000, 3);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Engineering Manager", 180000, 4);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Design Engineer", 80000, 4);
-INSERT INTO roles (title, salary, dept_id) VALUES ("Detailer", 120000, 4);
+INSERT INTO role (title, salary, dept_id) VALUES ("Foreman", 180000, 1);
+INSERT INTO role (title, salary, dept_id) VALUES ("Journeyman", 160000, 1);
+INSERT INTO role (title, salary, dept_id) VALUES ("Apprentice", 82000, 1);
+INSERT INTO role (title, salary, dept_id) VALUES ("Vice President", 250000, 2);
+INSERT INTO role (title, salary, dept_id) VALUES ("General Manager", 220000, 2);
+INSERT INTO role (title, salary, dept_id) VALUES ("Superintendent", 200000, 1);
+INSERT INTO role (title, salary, dept_id) VALUES ("Sr Project Manager", 120000, 3);
+INSERT INTO role (title, salary, dept_id) VALUES ("Project Manager", 100000, 3);
+INSERT INTO role (title, salary, dept_id) VALUES ("Project Engineer", 75000, 3);
+INSERT INTO role (title, salary, dept_id) VALUES ("Engineering Manager", 180000, 4);
+INSERT INTO role (title, salary, dept_id) VALUES ("Design Engineer", 80000, 4);
+INSERT INTO role (title, salary, dept_id) VALUES ("Detailer", 120000, 4);
 
 INSERT INTO employee (fName, lName, role_id, mgr_id) VALUES ("David", "Anthony", 1, 1);
 INSERT INTO employee (fName, lName, role_id) VALUES ("Frank", "Fuffy", 2);
@@ -62,7 +62,7 @@ INSERT INTO employee (fName, lName, role_id) VALUES ("Leehom", "Park", 12);
 
 -- views
 SELECT * FROM department;
-SELECT * FROM roles;
+SELECT * FROM role;
 SELECT * FROM employee;
 SELECT fName, id FROM employee WHERE id = 2;
 

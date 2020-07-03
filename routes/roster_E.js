@@ -1,27 +1,32 @@
 const inquirer = require("inquirer");
-const cTable = require("console.table");
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
-const connection = require("../config/connection");
 const {
   viewStaff,
   listByDept,
   listByMgr,
   viewRoles,
-  newStaff,
-  changeRole,
-  changeMgr,
-  removeStaff,
+  viewDept,
+  viewNames,
+  addStaff,
+  remStaff,
+  upRole,
+  upMgr,
+  // viewEmployees,--
+  // employeeByDept,--
+  // employeeByManager,--
+  // loadRoles,--
+  // addNewEmployee,--
+  // removeNewEmployee,--
+  // updateEmployeeRole,--
+  // updateEmployeeManager,
 } = require("../config/orm");
-
+const cTable = require("console.table");
+const connection = require("../config/connection");
 let roles = [];
 let employees = [];
-let newStaffList = {};
+let newEmployee = {};
 let roleID;
 let managerID;
-let staffID;
+let employeeID;
 
 const mainMenu = () => {
   inquirer
@@ -31,54 +36,46 @@ const mainMenu = () => {
       type: "list",
       choices: [
         "View ALL",
-        "View BY DEPT",
-        "View By MGR",
-        "View Utilized Budget",
+        "View By DEPT",
+        "View By Manager",
         "New Staff",
         "Update Staff's Role",
-        "Update Staff's Manager",
-        "Remove a Staff",
+        "Update Staff's MGR",
+        "Remove Staff",
         "Exit",
       ],
     })
     .then((res) => {
       switch (res.mainMenu) {
+        case "Exit":
+          connection.end();
+          process.exit();
         case "View ALL":
           viewStaff().then((res) => {
             console.table(res);
             mainMenu();
           });
           break;
-        case "View BY DEPT":
+        case "View By DEPT":
           listByDept().then((res) => {
             console.table(res);
             mainMenu();
           });
           break;
-        case "View By MGR":
+        case "View By Manager":
           listByMgr().then((res) => {
             console.table(res);
             mainMenu();
           });
           break;
-        case "View Utilized Budget":
-          salary().then((allRolesWithSalary) => {
-            let objSalary = [];
-            let tSalary = 0;
-            for (let i = 0; i < allRolesWithSalary.length; i++) {
-              if (typeof allRolesWithSalary[i].salary === "number") {
-                objSalary.push(allRolesWithSalary[i].salary);
-              }
-            }
-            for (let i = 0; i < objSalary.length; i++) {
-              tSalary += objSalary[i];
-            }
-            console.log(formatter.format(tSalary), "USD");
+        case "New Staff":
+          addEmployee().then((res) => {
+            console.log(res);
             mainMenu();
           });
           break;
-        case "New Staff":
-          addStaff().then((res) => {
+        case "Remove Staff":
+          removeEmployee().then((res) => {
             console.log(res);
             mainMenu();
           });
@@ -89,26 +86,17 @@ const mainMenu = () => {
             mainMenu();
           });
           break;
-        case "Update Staff's Manager":
+        case "Update Staff's MGR":
           updateManager().then((res) => {
             console.log(res);
             mainMenu();
           });
           break;
-        case "Remove a Staff":
-          removeAStaff().then((res) => {
-            console.log(res);
-            mainMenu();
-          });
-          break;
-        case "Exit":
-          connection.end();
-          process.exit();
       }
     });
 };
 
-const removeAStaff = () => {
+const removeEmployee = () => {
   employees = [];
   return new Promise((resolve, reject) => {
     viewStaff()
@@ -121,9 +109,9 @@ const removeAStaff = () => {
         inquirer
           .prompt([
             {
-              name: "employee",
+              name: "employees",
               type: "list",
-              message: "Which employee you want to remove?",
+              message: "Who is being removed?",
               choices: employees,
             },
           ])
@@ -132,12 +120,12 @@ const removeAStaff = () => {
               .then((data) => {
                 data.forEach((element) => {
                   if (res.employee === element.full_name) {
-                    staffID = element.id;
+                    employeeID = element.id;
                   }
                 });
               })
               .then(() => {
-                removeStaff(staffID).then((resp) => resolve(resp));
+                remStaff(employeeID).then((resp) => resolve(resp));
               });
           });
       })
@@ -147,15 +135,7 @@ const removeAStaff = () => {
   });
 };
 
-const salary = () => {
-  return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM role", (err, data) => {
-      err ? reject(err) : resolve(data);
-    });
-  });
-};
-
-const addStaff = () => {
+const addEmployee = () => {
   employees = [];
   roles = [];
   return new Promise((resolve, reject) => {
@@ -177,24 +157,24 @@ const addStaff = () => {
               .prompt([
                 {
                   name: "fName",
-                  message: "What is their first name?",
                   type: "input",
+                  message: "What is their first name?",
                 },
                 {
                   name: "lName",
-                  message: "What is their last name?",
                   type: "input",
+                  message: "What is their last name?",
                 },
                 {
                   name: "role",
-                  message: "What is their role?",
                   type: "list",
+                  message: "What is their role?",
                   choices: roles,
                 },
                 {
                   name: "manager",
-                  message: "Whom shall they report to?",
                   type: "list",
+                  message: "Whom shall they report to?",
                   choices: employees,
                 },
               ])
@@ -202,7 +182,7 @@ const addStaff = () => {
                 viewStaff()
                   .then((data) => {
                     data.forEach((element) => {
-                      if (res.role === element.title) {
+                      if (res.roles === element.title) {
                         roleID = element.role_id;
                       }
                       if (res.manager === element.full_name) {
@@ -213,16 +193,16 @@ const addStaff = () => {
                     });
                   })
                   .then(() => {
-                    newStaffList = {
+                    newEmployee = {
                       fName: res.fName,
                       lName: res.lName,
                       role_id: roleID,
                       mgr_id: managerID,
                     };
-                    return newStaffList;
+                    return newEmployee;
                   })
                   .then((obj) => {
-                    newStaff(obj).then((resp) => resolve(resp));
+                    addStaff(obj).then((resp) => resolve(resp));
                   });
               });
           });
@@ -254,15 +234,15 @@ const updateRole = () => {
             inquirer
               .prompt([
                 {
-                  name: "employee",
-                  message: "Who's role is to be updated?",
+                  name: "employees",
                   type: "list",
+                  message: "Whom are we updating's role?",
                   choices: employees,
                 },
                 {
-                  name: "role",
-                  message: "What is their new role?",
+                  name: "roles",
                   type: "list",
+                  message: "What are they going to be?",
                   choices: roles,
                 },
               ])
@@ -274,14 +254,14 @@ const updateRole = () => {
                         roleID = element.role_id;
                       }
                       if (res.employee === element.full_name) {
-                        staffID = element.id;
+                        employeeID = element.id;
                       } else if (res.manager === "None") {
-                        staffID = null;
+                        employeeID = null;
                       }
                     });
                   })
                   .then(() => {
-                    changeRole(staffID, roleID).then((resp) => resolve(resp));
+                    upRole(employeeID, roleID).then((resp) => resolve(resp));
                   });
               });
           });
@@ -305,15 +285,15 @@ const updateManager = () => {
         inquirer
           .prompt([
             {
-              name: "employee",
-              message: "Which staff request manager change?",
+              name: "employeed",
               type: "list",
+              message: "Which employee you want to update?",
               choices: employees,
             },
             {
               name: "manager",
-              message: "Whom shall they report to now?",
               type: "list",
+              message: "Who is the new manager of the employee?",
               choices: employees,
             },
           ])
@@ -325,14 +305,14 @@ const updateManager = () => {
                     managerID = element.id;
                   }
                   if (res.employee === element.full_name) {
-                    staffID = element.id;
+                    employeeID = element.id;
                   } else if (res.manager === "None") {
-                    staffID = null;
+                    employeeID = null;
                   }
                 });
               })
               .then(() => {
-                changeMgr(staffID, managerID).then((resp) => resolve(resp));
+                upMgr(employeeID, managerID).then((resp) => resolve(resp));
               });
           });
       })

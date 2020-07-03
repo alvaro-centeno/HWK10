@@ -4,18 +4,19 @@ const viewStaff = () => {
   return new Promise((resolve, reject) => {
     connection.query(
       `
-      SELECT
-      e.id "ID #",
-      CONCAT_WS(" ", e.fName, e.lName) "Full Name",
-      roles.title "Position",
-      department.name "Department",
-      CONCAT('$', format(roles.salary, 2)) "Base Salary",
-      CONCAT_WS(" ", m.fName, m.lName) "Manager"
+    SELECT
+    e.id id,
+    CONCAT_WS(" ", e.fName, e.lName) full_name,
+    role.id role_id,
+    role.title,
+    department.name,
+    CONCAT('$', format(role.salary, 2)) Salary,
+    CONCAT_WS(" ", m.fName, m.lName) manager
     FROM employee e
     LEFT JOIN employee m ON m.id = e.mgr_id
-    LEFT JOIN roles ON e.role_id = roles.id
-    LEFT JOIN department ON roles.dept_id = department.id
-    ORDER BY e.id
+    LEFT JOIN role ON e.role_id = role.id
+    LEFT JOIN department ON role.dept_id = department.id
+    ORDER BY e.id;
     `,
       (err, data) => {
         err ? reject(err) : resolve(data);
@@ -28,18 +29,18 @@ const listByDept = () => {
   return new Promise((resolve, reject) => {
     connection.query(
       `
-      SELECT
-      e.id "ID #",
-      CONCAT_WS(" ", e.fName, e.lName) "Full Name",
-      title "Title",
-      department.name "Department"
-    FROM employee e
-    LEFT JOIN roles
-    ON e.role_id = roles.id
-    LEFT JOIN department
-    ON roles.dept_id = department.id
-    ORDER BY department.id ASC;
-    `,
+      SELECT 
+      employee.id "ID No.", 
+      fName, 
+      lName,
+      title, 
+      department.name
+      FROM employee LEFT JOIN role
+      ON employee.role_id = role.id
+      LEFT JOIN department
+      ON role.dept_id = department.id
+      ORDER BY department.id ASC;
+      `,
       (err, data) => {
         err ? reject(err) : resolve(data);
       }
@@ -51,14 +52,13 @@ const listByMgr = () => {
   return new Promise((resolve, reject) => {
     connection.query(
       `
-      SELECT
-      e.id "ID #",
-      CONCAT_WS(" ", e.fName, e.lName) "Full Name",
-      CONCAT_WS(" ", m.fName, m.lName) "Manager"
-      FROM employee e
-      LEFT JOIN employee m ON m.id = e.mgr_id
-      ORDER BY Manager DESC;
-      `,
+    SELECT
+    CONCAT_WS(" ", m.fName, m.lName) manager,
+    CONCAT_WS(" ", e.fName, e.lName) employee 
+    FROM employee e
+    INNER JOIN employee m ON e.mgr_id = m.id
+    ORDER BY manager ASC;
+    `,
       (err, data) => {
         err ? reject(err) : resolve(data);
       }
@@ -66,54 +66,26 @@ const listByMgr = () => {
   });
 };
 
-const viewDept = () => {
-  return new Promise((resolve, reject) => {
-    connection.query(`SELECT * FROM department;`, (err, data) => {
-      err ? reject(err) : resolve(data);
-    });
-  });
-};
-
-const viewNames = () => {
-  return new Promise((resolve, reject) => {
-    connection.query(`SELECT * FROM employee;`, (err, data) => {
-      err ? reject(err) : resolve(data);
-    });
-  });
-};
-
 const viewRoles = () => {
   return new Promise((resolve, reject) => {
-    connection.query(`SELECT * FROM roles;`, (err, data) => {
+    connection.query(`SELECT * FROM role;`, (err, data) => {
       err ? reject(err) : resolve(data);
     });
   });
 };
 
-const addStaff = (obj) => {
+const newStaff = (obj) => {
   return new Promise((resolve, reject) => {
     connection.query(`INSERT INTO employee SET ?`, [obj], (err) => {
       if (err) {
         reject(err);
       }
-      resolve({ msg: "New Staff Added!" });
+      resolve({ msg: "Welcome the New Staff!" });
     });
   });
 };
 
-const remStaff = (empId) => {
-  return new Promise((resolve, reject) => {
-    connection.query(`DELETE FROM employee WHERE ?`, [{ id: empId }], (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ msg: "Removed Selected Staff!" });
-      }
-    });
-  });
-};
-
-const upRole = (empId, roleId) => {
+const changeRole = (empId, roleId) => {
   return new Promise((resolve, reject) => {
     connection.query(
       `UPDATE employee SET ? WHERE ?`,
@@ -122,14 +94,14 @@ const upRole = (empId, roleId) => {
         if (err) {
           reject(err);
         } else {
-          resolve({ msg: "Staff Updated Info!" });
+          resolve({ msg: "Role has been changed." });
         }
       }
     );
   });
 };
 
-const upMgr = (empId, managerId) => {
+const changeMgr = (empId, managerId) => {
   return new Promise((resolve, reject) => {
     connection.query(
       `UPDATE employee SET ? WHERE ?`,
@@ -138,10 +110,22 @@ const upMgr = (empId, managerId) => {
         if (err) {
           reject(err);
         } else {
-          resolve({ msg: "Staff's change Manager!" });
+          resolve({ msg: "New Manager is SET" });
         }
       }
     );
+  });
+};
+
+const removeStaff = (empId) => {
+  return new Promise((resolve, reject) => {
+    connection.query(`DELETE FROM employee WHERE ?`, [{ id: empId }], (err) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ msg: "Let's hope its not a mistake!" });
+      }
+    });
   });
 };
 
@@ -150,10 +134,8 @@ module.exports = {
   listByDept,
   listByMgr,
   viewRoles,
-  viewDept,
-  viewNames,
-  addStaff,
-  remStaff,
-  upRole,
-  upMgr,
+  newStaff,
+  changeRole,
+  changeMgr,
+  removeStaff,
 };
