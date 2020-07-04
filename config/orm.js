@@ -1,158 +1,87 @@
-const connection = require("./connection");
+const allEmployees = `
+SELECT 
+employee.id AS 'Staff ID', 
+employee.fName AS 'First Name', 
+employee.lName AS 'Last Name',
+role.title AS 'Position', 
+department.name AS 'Department', 
+CONCAT('$', FORMAT(role.salary, 2)) AS 'Salary',
+CONCAT_WS(" ", E.fName, E.lName) AS 'Manager Name'
+FROM employee 
+  INNER JOIN role 
+      ON (employee.role_id = role.id)
+  INNER JOIN department
+      ON (role.dept_id = department.id)
+  LEFT JOIN employee E
+      ON (employee.mgr_id = E.id)
+ORDER BY employee.id;
+`;
 
-const viewStaff = () => {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      `
-    SELECT
-    e.id id,
-    CONCAT_WS(" ", e.fName, e.lName) full_name,
-    role.id role_id,
-    role.title "Position",
-    department.name "Dept",
-    CONCAT('$', format(role.salary, 2)) salary,
-    CONCAT_WS(" ", m.fName, m.lName) manager
-    FROM employee e
-    LEFT JOIN employee m ON m.id = e.mgr_id
-    LEFT JOIN role ON e.role_id = role.id
-    LEFT JOIN department ON role.dept_id = department.id
-    ORDER BY e.id;
-    `,
-      (err, data) => {
-        err ? reject(err) : resolve(data);
-      }
-    );
-  });
-};
+const allDepartments = `SELECT name AS Departments FROM department`;
 
-const listByDept = () => {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      `
-      SELECT 
-      employee.id, 
-      fName, 
-      lName,
-      title, 
-      department.name
-      FROM employee LEFT JOIN role
-      ON employee.role_id = role.id
-      LEFT JOIN department
-      ON role.dept_id = department.id
-      ORDER BY department.id ASC;
-      `,
-      (err, data) => {
-        err ? reject(err) : resolve(data);
-      }
-    );
-  });
-};
+const allRoles = `SELECT title AS Roles FROM role`;
 
-const listByMgr = () => {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      `
-    SELECT
-    CONCAT_WS(" ", m.fName, m.lName) manager,
-    CONCAT_WS(" ", e.fName, e.lName) employee 
-    FROM employee e
-    INNER JOIN employee m ON e.mgr_id = m.id
-    ORDER BY manager ASC;
-    `,
-      (err, data) => {
-        err ? reject(err) : resolve(data);
-      }
-    );
-  });
-};
+const addStaff = `INSERT INTO employee SET ?`;
 
-const viewSNames = () => {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      `
-    SELECT 
-    id "ID No",
-    CONCAT_WS(" ", fName, lName) full_name
-    FROM employee;
-    `,
-      (err, data) => {
-        err ? reject(err) : resolve(data);
-      }
-    );
-  });
-};
+const addDepartment = `INSERT INTO department SET ?`;
 
-const viewRoles = () => {
-  return new Promise((resolve, reject) => {
-    connection.query(`SELECT * FROM role;`, (err, data) => {
-      err ? reject(err) : resolve(data);
-    });
-  });
-};
+const addRole = `INSERT INTO role SET ?`;
 
-const newStaff = (obj) => {
-  return new Promise((resolve, reject) => {
-    connection.query(`INSERT INTO employee SET ?`, [obj], (err) => {
-      if (err) {
-        reject(err);
-      }
-      resolve({ msg: "Welcome the New Staff!" });
-    });
-  });
-};
+const editStaff = `UPDATE employee SET ? WHERE ?`;
 
-const changeRole = (empId, roleId) => {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      `UPDATE employee SET ? WHERE ?`,
-      [{ role_id: roleId }, { id: empId }],
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ msg: "Role has been changed." });
-        }
-      }
-    );
-  });
-};
+const stfFN = `SELECT CONCAT_WS(" ", fName, lName) AS "Full Name" FROM employee`;
 
-const changeMgr = (empId, managerId) => {
-  return new Promise((resolve, reject) => {
-    connection.query(
-      `UPDATE employee SET ? WHERE ?`,
-      [{ mgr_id: managerId }, { id: empId }],
-      (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ msg: "New Manager is SET" });
-        }
-      }
-    );
-  });
-};
+const staffDept = `
+SELECT 
+CONCAT_WS(" ", employee.fName, employee.lName) AS 'Department Staff'
+FROM employee
+LEFT JOIN role
+  ON (employee.role_id = role.id)
+LEFT JOIN department
+  on (role.dept_id = department.id)
+WHERE department.id = ?
+`;
 
-const removeStaff = (empId) => {
-  return new Promise((resolve, reject) => {
-    connection.query(`DELETE FROM employee WHERE ?`, [{ id: empId }], (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ msg: "Let's hope its not a mistake!" });
-      }
-    });
-  });
-};
+const employeesManager = `
+SELECT 
+CONCAT_WS(" ", employee.fName, employee.lName) AS Staff
+FROM employee
+LEFT JOIN employee E
+  on (employee.mgr_id = E.id)
+WHERE employee.mgr_id = ?
+`;
+
+const budget = `
+SELECT 
+department.name AS Department, 
+CONCAT('$', FORMAT(SUM(salary),2)) AS 'Budget Utilized'
+FROM employee
+  INNER JOIN role
+	  on employee.role_id = role.id
+  INNER JOIN department
+	  on role.dept_id = department.id
+WHERE department.name = ?;
+`;
+
+const removeEmployee = `DELETE FROM employee WHERE ?`;
+
+const removeDepartment = `DELETE FROM department WHERE ?`;
+
+const removeRole = `DELETE FROM role WHERE ?`;
 
 module.exports = {
-  viewStaff,
-  listByDept,
-  listByMgr,
-  viewSNames,
-  viewRoles,
-  newStaff,
-  changeRole,
-  changeMgr,
-  removeStaff,
+  allEmployees,
+  allDepartments,
+  allRoles,
+  addStaff,
+  addDepartment,
+  addRole,
+  editStaff,
+  stfFN,
+  staffDept,
+  employeesManager,
+  budget,
+  removeEmployee,
+  removeDepartment,
+  removeRole,
 };

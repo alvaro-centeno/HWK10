@@ -1,7 +1,9 @@
 const connection = require("./config/connection");
-const mainMenu = require("./routes/roster");
+const { initApp } = require(`./lib/app`);
+const { initPrompts } = require(`./lib/prompt`);
 
 connection.connect((err) => {
   if (err) throw err;
-  mainMenu();
+  initApp();
+  initPrompts();
 });
