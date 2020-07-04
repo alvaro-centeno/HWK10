@@ -19,7 +19,7 @@ ORDER BY employee.id;
 
 const allDept = `SELECT name AS Departments FROM department`;
 
-const allRoles = `SELECT title AS Roles FROM role`;
+const allRoles = `SELECT title AS 'Roles' FROM role`;
 
 const addStaff = `INSERT INTO employee SET ?`;
 
@@ -29,7 +29,7 @@ const addRole = `INSERT INTO role SET ?`;
 
 const editStaff = `UPDATE employee SET ? WHERE ?`;
 
-const stfFN = `SELECT CONCAT_WS(" ", fName, lName) AS "Full Name" FROM employee`;
+const stfFN = `SELECT CONCAT_WS(" ", fName, lName) AS 'Full Name' FROM employee`;
 
 const staffDept = `
 SELECT 
@@ -53,7 +53,7 @@ WHERE employee.mgr_id = ?
 
 const budget = `
 SELECT 
-department.name AS Department, 
+department.name AS 'Department', 
 CONCAT('$', FORMAT(SUM(salary),2)) AS 'Budget Utilized'
 FROM employee
   INNER JOIN role
