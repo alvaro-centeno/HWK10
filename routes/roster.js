@@ -9,6 +9,7 @@ const {
   viewStaff,
   listByDept,
   listByMgr,
+  viewSNames,
   viewRoles,
   newStaff,
   changeRole,
@@ -30,9 +31,10 @@ const mainMenu = () => {
       message: "What would you like to do?",
       type: "list",
       choices: [
-        "View ALL",
+        "View it ALL",
         "View BY DEPT",
         "View By MGR",
+        "View Staff Names",
         "View Utilized Budget",
         "New Staff",
         "Update Staff's Role",
@@ -43,7 +45,7 @@ const mainMenu = () => {
     })
     .then((res) => {
       switch (res.mainMenu) {
-        case "View ALL":
+        case "View it ALL":
           viewStaff().then((res) => {
             console.table(res);
             mainMenu();
@@ -61,22 +63,19 @@ const mainMenu = () => {
             mainMenu();
           });
           break;
-        case "View Utilized Budget":
-          salary().then((allRolesWithSalary) => {
-            let objSalary = [];
-            let tSalary = 0;
-            for (let i = 0; i < allRolesWithSalary.length; i++) {
-              if (typeof allRolesWithSalary[i].salary === "number") {
-                objSalary.push(allRolesWithSalary[i].salary);
-              }
-            }
-            for (let i = 0; i < objSalary.length; i++) {
-              tSalary += objSalary[i];
-            }
-            console.log(formatter.format(tSalary), "USD");
+        case "View Staff Names":
+          viewSNames().then((res) => {
+            console.table(res);
             mainMenu();
           });
           break;
+        case "View Utilized Budget":
+          salary().then((res) => {
+            console.table(res);
+            mainMenu();
+          });
+          break;
+
         case "New Staff":
           addStaff().then((res) => {
             console.log(res);
@@ -149,9 +148,16 @@ const removeAStaff = () => {
 
 const salary = () => {
   return new Promise((resolve, reject) => {
-    connection.query("SELECT * FROM role", (err, data) => {
-      err ? reject(err) : resolve(data);
-    });
+    connection.query(
+      `
+      SELECT 
+      CONCAT('$', format(SUM(salary), 2)) "Total Budget"
+      FROM role
+      `,
+      (err, data) => {
+        err ? reject(err) : resolve(data);
+      }
+    );
   });
 };
 

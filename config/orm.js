@@ -8,9 +8,9 @@ const viewStaff = () => {
     e.id id,
     CONCAT_WS(" ", e.fName, e.lName) full_name,
     role.id role_id,
-    role.title,
-    department.name,
-    CONCAT('$', format(role.salary, 2)) Salary,
+    role.title "Position",
+    department.name "Dept",
+    CONCAT('$', format(role.salary, 2)) salary,
     CONCAT_WS(" ", m.fName, m.lName) manager
     FROM employee e
     LEFT JOIN employee m ON m.id = e.mgr_id
@@ -30,7 +30,7 @@ const listByDept = () => {
     connection.query(
       `
       SELECT 
-      employee.id "ID No.", 
+      employee.id, 
       fName, 
       lName,
       title, 
@@ -58,6 +58,22 @@ const listByMgr = () => {
     FROM employee e
     INNER JOIN employee m ON e.mgr_id = m.id
     ORDER BY manager ASC;
+    `,
+      (err, data) => {
+        err ? reject(err) : resolve(data);
+      }
+    );
+  });
+};
+
+const viewSNames = () => {
+  return new Promise((resolve, reject) => {
+    connection.query(
+      `
+    SELECT 
+    id "ID No",
+    CONCAT_WS(" ", fName, lName) full_name
+    FROM employee;
     `,
       (err, data) => {
         err ? reject(err) : resolve(data);
@@ -133,6 +149,7 @@ module.exports = {
   viewStaff,
   listByDept,
   listByMgr,
+  viewSNames,
   viewRoles,
   newStaff,
   changeRole,

@@ -103,7 +103,7 @@ SELECT
     CONCAT_WS(" ", e.fName, e.lName) `Full Name`,
     roles.title `Position`,
     department.name `Department`,
-	CONCAT('$', format(roles.salary, 2)) `Base Salary`,
+,
     CONCAT_WS(" ", m.fName, m.lName) `Manager`
 FROM
     employee e
@@ -111,3 +111,8 @@ LEFT JOIN employee m ON m.id = e.mgr_id
 LEFT JOIN roles ON e.role_id = roles.id
 LEFT JOIN department ON roles.dept_id = department.id
 ORDER BY e.id;
+
+-- View All Salary
+SELECT 
+CONCAT('$', format(SUM(salary), 2)) `Total Budget`
+FROM role;
