@@ -1,4 +1,4 @@
-const allEmployees = `
+const allStaff = `
 SELECT 
 employee.id AS 'Staff ID', 
 employee.fName AS 'First Name', 
@@ -17,13 +17,13 @@ FROM employee
 ORDER BY employee.id;
 `;
 
-const allDepartments = `SELECT name AS Departments FROM department`;
+const allDept = `SELECT name AS Departments FROM department`;
 
 const allRoles = `SELECT title AS Roles FROM role`;
 
 const addStaff = `INSERT INTO employee SET ?`;
 
-const addDepartment = `INSERT INTO department SET ?`;
+const addDept = `INSERT INTO department SET ?`;
 
 const addRole = `INSERT INTO role SET ?`;
 
@@ -42,7 +42,7 @@ LEFT JOIN department
 WHERE department.id = ?
 `;
 
-const employeesManager = `
+const staffMgr = `
 SELECT 
 CONCAT_WS(" ", employee.fName, employee.lName) AS Staff
 FROM employee
@@ -63,25 +63,25 @@ FROM employee
 WHERE department.name = ?;
 `;
 
-const removeEmployee = `DELETE FROM employee WHERE ?`;
+const delStaff = `DELETE FROM employee WHERE ?`;
 
-const removeDepartment = `DELETE FROM department WHERE ?`;
+const delDept = `DELETE FROM department WHERE ?`;
 
-const removeRole = `DELETE FROM role WHERE ?`;
+const delRole = `DELETE FROM role WHERE ?`;
 
 module.exports = {
-  allEmployees,
-  allDepartments,
+  allStaff,
+  allDept,
   allRoles,
   addStaff,
-  addDepartment,
+  addDept,
   addRole,
   editStaff,
   stfFN,
   staffDept,
-  employeesManager,
+  staffMgr,
   budget,
-  removeEmployee,
-  removeDepartment,
-  removeRole,
+  delStaff,
+  delDept,
+  delRole,
 };

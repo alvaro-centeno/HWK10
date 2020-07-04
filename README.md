@@ -22,26 +22,6 @@ user: [ichoi21](https://github.com/ichoi21) | email: ic@g.co | repos: [Click Her
 
 ![Database Schema](Assets/schema.png)
 
-- **department**:
-
-  - **id** - INT PRIMARY KEY
-  - **name** - VARCHAR(30) to hold department name
-
-- **role**:
-
-  - **id** - INT PRIMARY KEY
-  - **title** - VARCHAR(30) to hold role title
-  - **salary** - DECIMAL to hold role salary
-  - **department_id** - INT to hold reference to department role belongs to
-
-- **employee**:
-
-  - **id** - INT PRIMARY KEY
-  - **first_name** - VARCHAR(30) to hold employee first name
-  - **last_name** - VARCHAR(30) to hold employee last name
-  - **role_id** - INT to hold reference to role employee has
-  - **manager_id** - INT to hold reference to another employee that manager of the current employee. This field may be null if the employee has no manager
-
 Build a command-line application that at a minimum allows the user to:
 
 - Add departments, roles, employees
@@ -76,10 +56,7 @@ Perform the following:
 
 ```bash
 npm i
-npm i console.table
-npm i inquirer
-npm i mysql
-npm i dotenv
+npm i console.table inquirer mysql dotenv  (only if necessary)
 ```
 
 provide only host information to work locally.
@@ -90,4 +67,7 @@ Demonstration knowledge of MySQL added to the use of Javascript, express, and no
 
 - Add departments, roles, employees
 - View departments, roles, employees
-- Update employee roles
+- Update employee roles, managers
+- View employees by manager, by dept
+- Delete departments, roles, and employees
+- View the total utilized budget of a department
